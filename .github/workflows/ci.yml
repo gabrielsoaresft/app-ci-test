@@ -1,0 +1,47 @@
+name: Reforca
+
+on:
+  push:
+    branches-ignore: [ develop, main ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    # Build on Firebase
+    # - name: Build for commit
+    #   if: startsWith(github.event.head_commit.message, 'BUILD')
+    #   run: ./gradlew assembleRelease
+    # - name: Upload artifact to Firebase App Distribution
+    #   if: startsWith(github.event.head_commit.message, 'BUILD')
+    #   uses: wzieba/Firebase-Distribution-Github-Action@v1
+    #   with:
+    #     appId: ${{secrets.FIREBASE_APP_ID}}
+    #     token: ${{secrets.FIREBASE_TOKEN}}
+    #     groups: testers
+    #     file: app/build/outputs/apk/release/app-release-unsigned.apk
+    # Check Jira issue in commit
+    - name: Check Commit Type
+      uses: gsactions/commit-message-checker@v1
+      with:
+        pattern: '[A-Z]{2,}-\d+'
+        error: 'A mensagem necessita conter a issue que o commit pertence.'
+      run: echo ${{ github.event.head_commit.message }}
+    # Change issues on Jira
+    # - name: Login on Jira
+    #   uses: atlassian/gajira-login@master
+    #   env:
+    #     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+    #     JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+    #     JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    # - name: Transition issue
+    #   uses: atlassian/gajira-transition@master
+    #   with:
+    #     issue: ${{ github.event.head_commit.message }}
+    #     transition: "In Progress"
