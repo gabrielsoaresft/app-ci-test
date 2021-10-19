@@ -14,18 +14,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+    # Check and set Jira Issue
     - name: Check Commit Type
       uses: gsactions/commit-message-checker@v1
       with:
         pattern: '[A-Z]{2,}-\d+'
         error: 'A mensagem necessita conter a issue que o commit pertence.'
-    # - name: Print commit message
-    #   run: echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
     - name: Set env
       run: echo "ISSUE=$(echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o)" >> $GITHUB_ENV
     - name: Test
       run: echo $ISSUE
-    # Change issues on Jira
+    # Change Jira Issue
     - name: Login on Jira
       uses: atlassian/gajira-login@master
       env:
@@ -37,3 +36,12 @@ jobs:
       with:
         issue: ${{ env.ISSUE }}
         transition: "In Progress"
+    # Logs on Slack
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: alertas
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_TITLE: Mensagem do commit
+        SLACK_MESSAGE: ${{ github.event.head_commit.message }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
