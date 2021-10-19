@@ -19,8 +19,12 @@ jobs:
       with:
         pattern: '[A-Z]{2,}-\d+'
         error: 'A mensagem necessita conter a issue que o commit pertence.'
-    - name: Print commit message
-      run: echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
+    # - name: Print commit message
+    #   run: echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
+    - name: Set env
+      run: echo "ISSUE=$(echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o)" >> $GITHUB_ENV
+    - name: Test
+      run: echo $ISSUE
     # Change issues on Jira
     - name: Login on Jira
       uses: atlassian/gajira-login@master
@@ -30,8 +34,6 @@ jobs:
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
     - name: Transition issue
       uses: atlassian/gajira-transition@master
-      env:
-        ISSUE: echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
       with:
         issue: $ISSUE
         transition: "In Progress"
