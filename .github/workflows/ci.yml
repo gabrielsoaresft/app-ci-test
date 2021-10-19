@@ -20,11 +20,11 @@ jobs:
       with:
         pattern: '[A-Z]{2,}-\d+'
         error: 'A mensagem necessita conter a issue que o commit pertence.'
-    - name: Check Jira Status in message
-      uses: gsactions/commit-message-checker@v1
-      with:
-        pattern: '[A-Z]{2,}-\d+'
-        error: 'A mensagem necessita conter a issue que o commit pertence.'
+    # - name: Check Jira Status in message
+    #   uses: gsactions/commit-message-checker@v1
+    #   with:
+    #     pattern: '[A-Z]{2,}-\d+'
+    #     error: 'A mensagem necessita conter a issue que o commit pertence.'
     - name: Set env
       run: echo "ISSUE=$(echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o)" >> $GITHUB_ENV
     - name: Test
