@@ -15,7 +15,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     # Check and set Jira Issue
-    - name: Check Commit Type
+    - name: Check Jira Issue in message
+      uses: gsactions/commit-message-checker@v1
+      with:
+        pattern: '[A-Z]{2,}-\d+'
+        error: 'A mensagem necessita conter a issue que o commit pertence.'
+    - name: Check Jira Status in message
       uses: gsactions/commit-message-checker@v1
       with:
         pattern: '[A-Z]{2,}-\d+'
@@ -35,7 +40,7 @@ jobs:
       uses: atlassian/gajira-transition@master
       with:
         issue: ${{ env.ISSUE }}
-        transition: "In Progress"
+        transition: "Pronto para testes"
     # Logs on Slack
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
