@@ -21,3 +21,15 @@ jobs:
         error: 'A mensagem necessita conter a issue que o commit pertence.'
     - name: Print commit message
       run: echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
+    # Change issues on Jira
+    - name: Login on Jira
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    - name: Transition issue
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
+        transition: "In Progress"
