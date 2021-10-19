@@ -40,7 +40,7 @@ jobs:
       uses: atlassian/gajira-transition@master
       with:
         issue: ${{ env.ISSUE }}
-        transition: "Pronto para entrega"
+        transition: "Done"
     # Logs on Slack
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
