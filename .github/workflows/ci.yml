@@ -29,10 +29,7 @@ jobs:
         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
     - name: Transition issue
-      env:
-          MATRIX_CONTEXT: ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
-      run: $MATRIX_CONTEXT
-      # uses: atlassian/gajira-transition@master
-      # with:
-      #   issue: $MATRIX_CONTEXT
-      #   transition: "In Progress"
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: AG-236
+        transition: "In Progress"
