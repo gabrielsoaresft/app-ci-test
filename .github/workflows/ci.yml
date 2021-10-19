@@ -32,7 +32,7 @@ jobs:
       env:
           MATRIX_CONTEXT: ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o
       run: $MATRIX_CONTEXT
-      uses: atlassian/gajira-transition@master
-      with:
-        issue: $MATRIX_CONTEXT
-        transition: "In Progress"
+      # uses: atlassian/gajira-transition@master
+      # with:
+      #   issue: $MATRIX_CONTEXT
+      #   transition: "In Progress"
