@@ -35,5 +35,5 @@ jobs:
     - name: Transition issue
       uses: atlassian/gajira-transition@master
       with:
-        issue: $ISSUE
+        issue: ${{ ISSUE }}
         transition: "In Progress"
