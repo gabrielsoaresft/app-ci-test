@@ -1,0 +1,48 @@
+name: Reforca
+
+on:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    # Set Jira Issue
+    - name: Set Issue Env
+      run: echo "ISSUE=$(echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o)" >> $GITHUB_ENV
+    - name: Test Issue Env
+      run: echo $ISSUE
+    # Set Branch Env
+    - name: Set Branch Env
+      run: | 
+        if [[ ${GITHUB_REF##*/} == main ]]
+        then
+        echo "JIRA_STATUS = Done" >> $GITHUB_ENV
+        else
+        echo "JIRA_STATUS = In progress" >> $GITHUB_ENV
+    # Change Jira Issue
+    - name: Login on Jira
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    - name: Transition issue
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: ${{ env.ISSUE }}
+        transition: ${{ env.JIRA_STATUS }}
+    # Logs on Slack
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: alertas
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_TITLE: Mensagem do commit
+        SLACK_MESSAGE: ${{ github.event.head_commit.message }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
