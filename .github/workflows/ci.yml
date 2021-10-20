@@ -9,7 +9,6 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        funciona: [ 3, 4, 5 ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
