@@ -20,11 +20,12 @@ jobs:
     # Set Branch Env
     - name: Set Branch Env
       run: | 
-        if [[ ${GITHUB_REF##*/} == main ]]
+        if [[ ${GITHUB_REF##*/} == "main" ]]
         then
-        echo "JIRA_STATUS = Done" >> $GITHUB_ENV
+          echo "JIRA_STATUS = Done" >> $GITHUB_ENV
         else
-        echo "JIRA_STATUS = In progress" >> $GITHUB_ENV
+          echo "JIRA_STATUS = In progress" >> $GITHUB_ENV
+        fi
     # Change Jira Issue
     - name: Login on Jira
       uses: atlassian/gajira-login@master
