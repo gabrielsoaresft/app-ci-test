@@ -2,9 +2,7 @@ name: Reforca
 
 on:
   push:
-    branches-ignore: [ develop, main ]
-  pull_request:
-    branches: [ develop ]
+    branches: [ main, develop ]
 
 jobs:
   build:
@@ -14,25 +12,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
-    # Check and set Jira Issue
-    - name: Check Jira Issue in message
-      uses: gsactions/commit-message-checker@v1
-      with:
-        pattern: '[A-Z]{2,}-\d+'
-        error: 'A mensagem necessita conter a issue que o commit pertence.'
-    - name: Check Jira Status in message
-      uses: gsactions/commit-message-checker@v1
-      with:
-        pattern: '\b(To do|In Progress|Pronto para testes|Em Testes|Done|Pronto para entrega|Revisão de codigo)\b'
-        error: 'A mensagem necessita conter o status da issue que o commit pertence.'
+    # Set Jira Issue
     - name: Set Issue Env
       run: echo "ISSUE=$(echo ${{ github.event.head_commit.message }} | grep -P '[A-Z]{2,}-\d+' -o)" >> $GITHUB_ENV
     - name: Test Issue Env
       run: echo $ISSUE
-    - name: Set Status Env
-      run: echo "STATUS=$(echo ${{ github.event.head_commit.message }} | grep -P '\b(To do|In Progress|Pronto para testes|Em Testes|Done|Pronto para entrega|Revisão de codigo)\b' -o)" >> $GITHUB_ENV
-    - name: Test Status Env
-      run: echo $STATUS
+    # Set Branch Env
+    - name: Set Branch Env
+      run: | 
+        if [[ ${GITHUB_REF##*/} == main ]]
+        then
+        echo "JIRA_STATUS = Done" >> $GITHUB_ENV
+        else
+        echo "JIRA_STATUS = In progress" >> $GITHUB_ENV
     # Change Jira Issue
     - name: Login on Jira
       uses: atlassian/gajira-login@master
@@ -44,7 +36,7 @@ jobs:
       uses: atlassian/gajira-transition@master
       with:
         issue: ${{ env.ISSUE }}
-        transition: ${{ env.STATUS }}
+        transition: ${{ env.JIRA_STATUS }}
     # Logs on Slack
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
